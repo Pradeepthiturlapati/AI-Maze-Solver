@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #f3f8fb;
+            color: #333;
+        }
+
+        h1 {
+            position: relative;
+            top: 10px;
+            text-align: center;
+            width: 100%;
+            color: white;
+            font-size: 2.5em;
+            margin: 0;
+            background-color: #4CAF50;
+            padding: 10px;
+        }
+
+        #previewBox {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        #previewBox img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maze Solver</h1>
+    <p>Please upload a maze image to process it into a grid of 0s and 1s!</p>
+    <div id="previewBox">Upload Image</div>
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="processButton">Process Maze</button>
+    <pre id="output"></pre>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const previewBox = document.getElementById('previewBox');
+        const processButton = document.getElementById('processButton');
+        const output = document.getElementById('output');
+
+        // Trigger file input when clicking the preview box
+        previewBox.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Display uploaded image in the preview box
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewBox.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewBox.textContent = 'Upload Image';
+            }
+        });
+
+        // Process maze into grids of 0s and 1s
+        processButton.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            if (!file || !file.type.startsWith('image/')) {
+                alert('Please upload a valid image!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set canvas dimensions to match image
+                    const width = img.width;
+                    const height = img.height;
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw the image on the canvas
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Extract pixel data
+                    const imageData = ctx.getImageData(0, 0, width, height);
+                    const data = imageData.data;
+
+                    // Threshold logic to convert to grid of 1s and 0s
+                    const gridSize = 10; // Define the grid size (10x10 pixel blocks)
+                    const rows = Math.floor(height / gridSize);
+                    const cols = Math.floor(width / gridSize);
+                    let grid = '';
+
+                    for (let row = 0; row < rows; row++) {
+                        for (let col = 0; col < cols; col++) {
+                            // Calculate average brightness of the current grid block
+                            let totalBrightness = 0;
+                            let count = 0;
+
+                            for (let y = row * gridSize; y < (row + 1) * gridSize; y++) {
+                                for (let x = col * gridSize; x < (col + 1) * gridSize; x++) {
+                                    const index = (y * width + x) * 4;
+                                    const r = data[index];
+                                    const g = data[index + 1];
+                                    const b = data[index + 2];
+                                    const brightness = (r + g + b) / 3; // Calculate brightness
+                                    totalBrightness += brightness;
+                                    count++;
+                                }
+                            }
+
+                            const avgBrightness = totalBrightness / count;
+                            grid += avgBrightness < 128 ? '1' : '0'; // 1 for black, 0 for white
+                        }
+                        grid += '\n'; // New row
+                    }
+
+                    // Display the grid
+                    output.textContent = grid;
+                };
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
