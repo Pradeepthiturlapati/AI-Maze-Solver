@@ -1,0 +1,17 @@
+creating virtual environment
+> py -m venv .env
+
+activating virtual environment
+> .env\Scripts\activate
+
+creating react app
+> npm install react
+> npx create-react-app maze-app
+> npm install web-vitals
+> npm start
+
+creating Django
+> pip install django
+> django-admin startproject maze_solver
+> py manage.py runserver
+
