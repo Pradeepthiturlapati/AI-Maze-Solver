@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Maze Solver</title>
+    <meta name="description" content="A simple maze solver game/program">
+    <meta name="author" content="Sem Postma, sem.postma@gmail.com">
+
+    <style>
+        body {
+            margin: 20px;
+            position: relative;
+        }
+
+        .draggable {
+            width: 5px;
+            height: 5px;
+            cursor: move;
+            position: absolute;
+        }
+
+        .draggable.start {
+            background: green;
+        }
+
+        .draggable.end {
+            background: red;
+        }
+
+        canvas {
+            display: block;
+            border: 1px solid #ccc;
+        }
+
+        /* The slider itself */
+
+        .slider {
+           
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 23px;
+            height: 24px;
+            border: 0;
+            background: url('contrasticon.png');
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 23px;
+            height: 25px;
+            border: 0;
+            background: url('contrasticon.png');
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Maze Solver</h1>
+    <div>
+        <canvas id="c"></canvas>
+    </div>
+    <input type="file" name="image" id="image">
+    <div id="maze-start" style="top: 77px; left: 2px;" class="start draggable"></div>
+    <div id="maze-end" style="top: 451.333px; left: 506px;" class="end draggable"></div>
+    <button id="start">Start</button>
+    <button id="reset">Reset</button>
+
+    <h3>Advanced:</h3>
+    <div class="slidecontainer" style="width: 200px;">
+        <label for="resolution">
+            <b>Resolution</b>
+        </label>
+        <input type="range" min="1" max="20" value="2" class="slider" id="resolution">
+        <output id="resolution-output"></output>
+    </div>
+    <div style="margin-top: 20px;"></div>
+    <div class="slidecontainer" style="width: 200px;">
+        <label for="speed">
+            <b>Speed</b>
+        </label>
+        <input type="range" min="1" max="100" value="50" class="slider" id="speed">
+        <output id="speed-output"></output>
+    </div>
+
+
+    <script src="maze_solver.js"></script>
+</body>
+
+</html>
